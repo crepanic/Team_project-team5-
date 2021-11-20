@@ -32,13 +32,15 @@ public:
     bool insert(Stock *stIn);
     bool remove(Stock* stOut, string key);
     int search(Stock* target, string key);
+    int collisionCount(); // return number of collisions (total)
+    int longestLinkedListCount(); // return length of the longest linked list
 
 private:
     int _hash(string key) const;
 };
 
 
-int HashTable::_hash(string key) const
+int HashTable::_hash(string key) const // have to improve hash function, other than using modulo Division
 {
     int sum = 0;
     for (int i = 0; key[i]; i++)
@@ -47,51 +49,63 @@ int HashTable::_hash(string key) const
 };
 
 /*~*~*~*
-  hash insert - linear probe
+  hash insert - hash table with chanining
 *~**/
 
-
-bool HashTable::insert(Stock& stIn)
+bool HashTable::insert(Stock* stIn)
 {
-    if (count == hashSize)   //when hashtable is full, it returns false
-        return false;
-    int bucketN = _hash(stIn.getTicker());
+    int bucketN = _hash(stIn->getTicker());
 
-    int bucketsProbed = 0;
+    if (HashTable::search(stIn, stIn->getTicker())) return false; //duplicate a primary key
 
-    while (bucketsProbed < hashSize)
-    {
-        if (hashAry[bucketN].getOccupied() != 1)
-        {
-            hashAry[bucketN].setItem(stIn);
-            hashAry[bucketN].setOccupied(1);
-            hashAry[bucketN].setNoCollisions(bucketsProbed);
-            this->count += 1;
-            return true;
-        }
-        else
-        {
-            ++bucketsProbed;
-            bucketN = (bucketN + 1) % hashSize;
-        }
+    // insert a new item
+    if (hashAry[bucketN]==NULL) {
+        HashNode* node = new HashNode;
+        hashAry[bucketN] = node;
+        node->setItem(stIn);
+        node->setNextNode(NULL);
+        node->setNoCollisions(1);
+        node->setOccupied(1);
+
+        count++;
     }
+    else {
+        HashNode* head = hashAry[bucketN];
+        while (head) {
+            if (head->getNextNode()) head = head->getNextNode();
+        }
+
+        HashNode* node = new HashNode;
+        head->setNextNode(node);
+        node->setItem(stIn);
+        node->setNextNode(NULL);
+        node->setNoCollisions(head->getNoCollisions() + 1);
+        node->setOccupied(1);
+
+        count++;
+    }
+
     return true;
 }
 
 /*~*~*~*
-
+  hash remove - hashnode delete from hashtable by primary key(Ticker)
 *~**/
 
-bool HashTable::remove(Stock& stOut, string key)
+bool HashTable::remove(Stock* stOut, string key)
 {
-    Stock finding;
+    Stock* found = new Stock;
 
-    if (HashTable::search(finding, key) == -1) return false;
+    if (HashTable::search(found, key) == -1) return false; // No such a item.
     else
     {
-        stOut = finding;
+        stOut = found;
 
         int bucketN = _hash(key);
+
+
+
+/*
         int bucketsProbed = 0;
 
         while ((hashAry[bucketN].getOccupied() != 0 && bucketsProbed < this->getSize()))
@@ -112,6 +126,7 @@ bool HashTable::remove(Stock& stOut, string key)
 
             ++bucketsProbed;
         }
+*/
     }
 
     return true;
@@ -121,27 +136,42 @@ bool HashTable::remove(Stock& stOut, string key)
 
 *~**/
 
-int HashTable::search(Stock& target, string key)
+int HashTable::search(Stock* target, string key)
 {
     int bucketN = _hash(key);
-    int bucketsProbed = 0;
 
-    while (((hashAry[bucketN].getOccupied() != 0 or hashAry[bucketN].getNoCollisions() > 0) && bucketsProbed < this->getSize()))
-    {
-        if ((hashAry[bucketN].getOccupied() != 0 or hashAry[bucketN].getNoCollisions() > 0) && hashAry[bucketN].getItem().getName() == key)
-        {
-            itemOut = hashAry[bucketN].getItem();
-            return hashAry[bucketN].getNoCollisions();
+    if (hashAry[bucketN] == NULL) return -1;
+    else {
+        HashNode* head = hashAry[bucketN];
+        while (head) {
+            if (head->getItem()->getTicker() == key) target = head->getItem();
+            else head = head->getNextNode();
         }
 
-        bucketN = (bucketN + 1) % hashSize;
-
-        ++bucketsProbed;
+        if (target == NULL && head->getNextNode() == NULL) return -1;
     }
 
-    return -1;
+    return 0;
 }
 
+/*~*~*~*
+
+*~**/
+
+int HashTable::collisionCount()
+{
+    return 0;
+}
+
+
+/*~*~*~*
+
+*~**/
+
+int HashTable::longestLinkedListCount()
+{
+
+}
 
 
 #endif // HASHTABLE_H_
