@@ -19,7 +19,7 @@ private:
 
 public:
     // constructors
-    HashNode() { occupied = 0; noCollisions = 0; nextNode = NULL; }
+    HashNode() { st = NULL; occupied = 0; noCollisions = 0; nextNode = NULL; }
     HashNode(Stock& anSt) { st = &anSt; occupied = 1; noCollisions = 0; nextNode = NULL; }
     HashNode(Stock& anSt, int ocp, int nCol, HashNode* nNode)
     {

@@ -1,8 +1,8 @@
 #pragma once
 #include <string>
 // Specification file for the Stock class
-// Modified by:
-// IDE: Visual Studio 
+// written by: Sunmi Reu
+// IDE: Visual Studio
 
 #ifndef STOCK_H
 #define STOCK_H
@@ -40,7 +40,7 @@ public:
     int getChange() const { return change; }
     int getVolume() const { return volume; }
     string getDate() const { return date; }
- 
+
     // Overloaded operators
     bool operator==(const Stock& st) { return this->getTicker() == st.getTicker(); }
 };

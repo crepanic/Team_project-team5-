@@ -1,5 +1,12 @@
 #pragma once
+#include <iostream>
+#include <iomanip>
 #include <string>
+
+using std::string;
+using std::ostream;
+using namespace std;
+
 // Specification file for the Stock class
 // Modified by:
 // IDE: Visual Studio 
@@ -22,7 +29,15 @@ private:
 
 public:
     Stock() { ticker = ""; cname = ""; price = 0; }  // Constructor
-    Stock(string tk, string n, int p) { ticker = tk; cname = n; price = p; }  // Overloaded Constructor
+    Stock(string tk, string n, int p, float percent_ch, int vol, string dt) 
+    { 
+        ticker = tk; 
+        cname = n; 
+        price = p;
+        pchange = percent_ch;
+        volume = vol;
+        date = dt;
+    }  // Overloaded Constructor
 
     // Setters and getters
     void setTicker(string tk) { ticker = tk; }
@@ -40,8 +55,28 @@ public:
     int getChange() const { return change; }
     int getVolume() const { return volume; }
     string getDate() const { return date; }
- 
+     
+    //other functions
+    void hDdisplay() const
+    {
+        cout << left;
+        cout << "   " << ticker;
+        cout << "  " << cname;
+        cout << "     " << price;
+        cout << left;
+
+    }
+
+    // overloaded operators
+    friend ostream& operator<<(ostream& os, const Stock& st)
+    {
+        st.hDdisplay();
+        return os;
+    }
+
     // Overloaded operators
-    bool operator==(const Stock& st) { return this->getTicker() == st.getTicker(); }
+    bool operator==(const Stock& st) { return this->getCname() == st.getCname(); }
+    bool operator>(const Stock& st) { return this->getCname() > st.getCname(); }
+    bool operator<(const Stock& st) { return this->getCname() < st.getCname(); }
 };
 #endif
