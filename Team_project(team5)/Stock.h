@@ -74,7 +74,6 @@ public:
         return os;
     }
 
-    // Overloaded operators
     bool operator==(const Stock& st) { return this->getCname() == st.getCname(); }
     bool operator>(const Stock& st) { return this->getCname() > st.getCname(); }
     bool operator<(const Stock& st) { return this->getCname() < st.getCname(); }
